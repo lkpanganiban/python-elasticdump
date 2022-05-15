@@ -2,7 +2,9 @@ certifi==2021.10.8
 charset-normalizer==2.0.12
 fire==0.4.0
 idna==3.3
+-e git+git@github.com:lkpanganiban/python-elasticdump.git@621de686984c0e6ae343cbbc16dfd0aec28693e9#egg=python_esdump
 requests==2.27.1
 six==1.16.0
 termcolor==1.1.0
+tqdm==4.64.0
 urllib3==1.26.9
