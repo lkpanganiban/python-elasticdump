@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 class ESDump:
-    def __init__(self, input, output, size=100):
+    def __init__(self, input, output, size=100, delay=1):
        self.input = input
        self.output = output
        self.size = size
@@ -16,6 +16,7 @@ class ESDump:
            "sort": [{"_id": {"order": "asc"}}]
        }
        self.pages = 1
+       self.delay = delay
 
     def _fetch_data(self, params=None):
         if params is None:
@@ -35,12 +36,32 @@ class ESDump:
             for d in data_list:
                 output_file.write(json.dumps(d) + "\n")
 
-    def esdump(self):
+    def _store_values(self, es_id, data):
+        r_url = self.input + f"/_doc/{es_id}"
+        headers = {"Content-type": "application/json"}
+        r = requests.post(r_url, json=data, headers=headers)
+        if r.status_code > 400:
+            return f"failed: {es_id}"
+        else:
+            return f"success: {es_id}"
+
+    def restore(self):
+        with open(self.input, "r") as input_file:
+            while True:
+                line = input_file.readline()
+                if not line:
+                    print(f"finished restoring {self.input}")
+                    break
+                json_data = json.loads(line)
+                res = self._store_values(json_data["_id"], json_data["_source"])
+                print(res)
+
+    def dump(self):
         num_entries = self._count_entries()
         self.pages = math.ceil(num_entries / self.size)
         params = None
         for p in tqdm(range(1, self.pages + 1)):
-            time.sleep(1)
+            time.sleep(self.delay)
             data = self._fetch_data(params)
             sort_id = data['hits']['hits'][-1]['_id']
             params = self.params.copy()

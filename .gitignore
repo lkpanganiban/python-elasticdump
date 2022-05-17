@@ -1,3 +1,4 @@
 env
 python_esdump.egg-info/
 __pycache__/
+test/
