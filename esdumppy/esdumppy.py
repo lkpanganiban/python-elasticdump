@@ -8,15 +8,12 @@ from tqdm import tqdm
 
 class ESDump:
     def __init__(self, input, output, size=100, delay=1):
-       self.input = input
-       self.output = output
-       self.size = size
-       self.params = {
-           "size": self.size,
-           "sort": [{"_id": {"order": "asc"}}]
-       }
-       self.pages = 1
-       self.delay = delay
+        self.input = input
+        self.output = output
+        self.size = size
+        self.params = {"size": self.size, "sort": [{"_id": {"order": "asc"}}]}
+        self.pages = 1
+        self.delay = delay
 
     def _fetch_data(self, params=None):
         if params is None:
@@ -29,7 +26,7 @@ class ESDump:
     def _count_entries(self):
         r_url = self.input + "/_count"
         r = requests.get(r_url)
-        return r.json()['count']
+        return r.json()["count"]
 
     def _write_values(self, data_list):
         with open(self.output, "a") as output_file:
@@ -63,7 +60,7 @@ class ESDump:
         for p in tqdm(range(1, self.pages + 1)):
             time.sleep(self.delay)
             data = self._fetch_data(params)
-            sort_id = data['hits']['hits'][-1]['_id']
+            sort_id = data["hits"]["hits"][-1]["_id"]
             params = self.params.copy()
             params["search_after"] = [sort_id]
             self._write_values(data["hits"]["hits"])
@@ -72,4 +69,3 @@ class ESDump:
 
 def main():
     fire.Fire(ESDump)
-
