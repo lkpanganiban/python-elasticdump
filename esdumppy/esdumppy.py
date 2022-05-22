@@ -42,16 +42,20 @@ class ESDump:
         else:
             return f"success: {es_id}"
 
+    def _load_to_es(self, data):
+        while True:
+            line = input_file.readline()
+            if not line:
+                print(f"finished restoring {self.input}")
+                break
+            json_data = json.loads(line)
+            res = self._store_values(json_data["_id"], json_data["_source"])
+            print(res)
+        return True
+
     def restore(self):
         with open(self.input, "r") as input_file:
-            while True:
-                line = input_file.readline()
-                if not line:
-                    print(f"finished restoring {self.input}")
-                    break
-                json_data = json.loads(line)
-                res = self._store_values(json_data["_id"], json_data["_source"])
-                print(res)
+            self._load_to_es(input_file)
 
     def dump(self):
         num_entries = self._count_entries()
