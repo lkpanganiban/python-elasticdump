@@ -17,4 +17,6 @@ A Python implementation of elasticdump.
 elasticdump dump --input=<url-with-index> --output=<output-file> --size=<size>
 ```
 2. Restore a dump
+```
 elasticdump restore --output=<url-with-index> --input=<output-file> --size=<size>
+```

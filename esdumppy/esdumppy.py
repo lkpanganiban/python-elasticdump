@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 class ESDump:
-    def __init__(self, input, output, size=100, delay=1):
+    def __init__(self, input, output, size=100, delay=0.5):
         self.input = input
         self.output = output
         self.size = size
@@ -44,11 +44,12 @@ class ESDump:
 
     def _load_to_es(self, data):
         while True:
-            line = input_file.readline()
+            line = data.readline()
             if not line:
                 print(f"finished restoring {self.input}")
                 break
             json_data = json.loads(line)
+            time.sleep(self.delay)
             res = self._store_values(json_data["_id"], json_data["_source"])
             print(res)
         return True
