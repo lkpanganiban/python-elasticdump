@@ -14,13 +14,15 @@ class ESDump:
         self.params = {"size": self.size, "sort": [{"_id": {"order": "asc"}}]}
         self.pages = 1
         self.delay = delay
+        self.headers = {"Content-type": "application/json"}
 
     def _fetch_data(self, params=None):
         if params is None:
             params = self.params
         r_url = self.input + "/_search"
-        headers = {"Content-type": "application/json"}
-        r = requests.get(r_url, json=params, headers=headers)
+        r = requests.get(r_url, json=params, headers=self.headers)
+        if r.status_code > 400:
+            return None
         return r.json()
 
     def _count_entries(self):
@@ -35,10 +37,9 @@ class ESDump:
 
     def _store_values(self, es_id, data):
         r_url = self.input + f"/_doc/{es_id}"
-        headers = {"Content-type": "application/json"}
-        r = requests.post(r_url, json=data, headers=headers)
+        r = requests.post(r_url, json=data, headers=self.headers)
         if r.status_code > 400:
-            return f"failed: {es_id}"
+            return f"failed: {es_id}, with error {r.text}"
         else:
             return f"success: {es_id}"
 
@@ -65,6 +66,7 @@ class ESDump:
         for p in tqdm(range(1, self.pages + 1)):
             time.sleep(self.delay)
             data = self._fetch_data(params)
+            if data is None: continue
             sort_id = data["hits"]["hits"][-1]["_id"]
             params = self.params.copy()
             params["search_after"] = [sort_id]
