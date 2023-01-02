@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 
 class ESDump:
-    def __init__(self, input, output, size=100, delay=0.5):
+    def __init__(self, input, output, size=100, delay=0.5, overwrite=0):
         self.input = input
         self.output = output
         self.size = size
@@ -15,6 +15,7 @@ class ESDump:
         self.pages = 1
         self.delay = delay
         self.headers = {"Content-type": "application/json"}
+        self.overwite = int(overwrite)
 
     def _fetch_data(self, params=None):
         if params is None:
@@ -31,7 +32,9 @@ class ESDump:
         return r.json()["count"]
 
     def _write_values(self, data_list):
-        with open(self.output, "a") as output_file:
+        if self.overwrite: mode="w"
+        else: mode="a"
+        with open(self.output, mode) as output_file:
             for d in data_list:
                 output_file.write(json.dumps(d) + "\n")
 
