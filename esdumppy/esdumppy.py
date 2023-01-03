@@ -32,8 +32,9 @@ class ESDump:
         return r.json()["count"]
 
     def _write_values(self, data_list):
-        if self.overwrite: mode="w"
-        else: mode="a"
+        mode = "a"
+        if self.overwrite:
+            mode = "w"
         with open(self.output, mode) as output_file:
             for d in data_list:
                 output_file.write(json.dumps(d) + "\n")
@@ -69,7 +70,8 @@ class ESDump:
         for p in tqdm(range(1, self.pages + 1)):
             time.sleep(self.delay)
             data = self._fetch_data(params)
-            if data is None: continue
+            if data is None:
+                continue
             sort_id = data["hits"]["hits"][-1]["_id"]
             params = self.params.copy()
             params["search_after"] = [sort_id]
