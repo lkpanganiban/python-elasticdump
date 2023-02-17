@@ -1,5 +1,6 @@
-# Python ELASTICDUMP
-A Python implementation of elasticdump. 
+# Python Elasticdump
+A Python implementation of 
+[elasticdump](https://github.com/elasticsearch-dump/elasticsearch-dump). 
 
 ## Requirements
 - Python 3.8+
